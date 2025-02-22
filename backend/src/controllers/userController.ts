@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 // Como o desafio não pediu persistência de dados, armazenar dados temporariamente
 let users: { id: number; name: string }[] = []
