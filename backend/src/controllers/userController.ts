@@ -2,11 +2,11 @@ import { Request, Response } from 'express'
 
 // Como o desafio não pediu persistência de dados, armazenar dados temporariamente:
 let users: { id: number; name: string; age: number }[] = []
+// Contador para os ids
+let nextID = 1
 
 // GET /users
 export const getAllUsers = (req: Request, res: Response): void => {
-	const { id } = req.params
-	id ? res.json(users[Number(id)]) : 
 	res.json(users)
 }
 
@@ -17,7 +17,7 @@ export const getUserByID = (req: Request, res: Response): void => {
 	if (user) {
 		res.json(user)
 	} else {
-		res.status(404).json({ message: "Usuário não encontrado"})
+		res.status(404).json({ message: 'Usuário não encontrado' })
 	}
 }
 
@@ -31,7 +31,7 @@ export const createUser = (req: Request, res: Response): void => {
 			res.status(400).json({ message: 'Idade é obrigatória' })
 		}
 	}
-	const newUser = { id: users.length + 1, name, age }
+	const newUser = { id: nextID++, name, age }
 	users.push(newUser)
 	res.status(201).json(newUser)
 }
@@ -40,7 +40,7 @@ export const createUser = (req: Request, res: Response): void => {
 export const deleteUser = (req: Request, res: Response): void => {
 	const { id } = req.params
 	const userIndex = users.findIndex(user => user.id === Number(id))
-	if(userIndex !== -1) {
+	if (userIndex !== -1) {
 		users.splice(userIndex, 1)
 		res.status(204).send()
 	} else {
@@ -48,4 +48,10 @@ export const deleteUser = (req: Request, res: Response): void => {
 			message: 'Usuário não encontrado'
 		})
 	}
+}
+
+// user age
+export const getUserAge = (userId: number): number | undefined => {
+	const user = users.find(user => user.id === userId)
+	return user ? user.age : undefined
 }
