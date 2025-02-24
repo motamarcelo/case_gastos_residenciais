@@ -33,6 +33,8 @@ export const getUserByID = (req: Request, res: Response): void => {
 // POST /users
 export const createUser = (req: Request, res: Response): void => {
 	const { name, age } = req.body
+
+	// Garante que os campos obrigatórios estão preenchidos
 	if (!name || !age) {
 		if (!name) {
 			res.status(400).json({ message: 'Nome é obrigatório' })

@@ -44,7 +44,10 @@ export const createTransaction = (req: Request, res: Response): void => {
 		return
 	}
 
+	// Procura o usuário na "Base de dados"
 	const user = findUserById(personId)
+
+	// Se o usuário não for encontrado
 	if (!user) {
 		res.status(400).json({ message: 'Usuário não encontrado' })
 		return
@@ -58,6 +61,7 @@ export const createTransaction = (req: Request, res: Response): void => {
 		return
 	}
 
+	// Garante que o campo tipo só aceite os dois valores
 	if (type !== 'receita' && type !== 'despesa') {
 		res.status(400).json({
 			message: "O campo type apenas aceita valores 'receita' ou 'despesa'"
@@ -65,6 +69,7 @@ export const createTransaction = (req: Request, res: Response): void => {
 		return
 	}
 
+	// Monta e Salva nova transação
 	const newTransaction = { id: nextID++, description, value, type, personId }
 	transactions.push(newTransaction)
 	res.status(201).json(newTransaction)
