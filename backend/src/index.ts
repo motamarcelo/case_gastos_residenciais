@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express'
 import userRoutes from './routes/userRoutes'
+import cors from 'cors'
 import transactionsRoutes from './routes/transactionsRoutes'
 
 const app = express()
@@ -7,6 +8,9 @@ const port = 3000
 
 // Middleware para parsear o  JSON
 app.use(express.json())
+
+// Middleware para habilitar CORS
+app.use(cors())
 
 // Rotas
 app.use('/users', userRoutes)
