@@ -23,8 +23,10 @@ export const getUserByID = (req: Request, res: Response): void => {
 	const user = findUserById(Number(id))
 	if (user) {
 		res.json(user)
+		return
 	} else {
 		res.status(404).json({ message: 'Usuário não encontrado' })
+		return
 	}
 }
 
@@ -37,6 +39,7 @@ export const createUser = (req: Request, res: Response): void => {
 		} else {
 			res.status(400).json({ message: 'Idade é obrigatória' })
 		}
+		return
 	}
 	const newUser = { id: nextID++, name, age }
 	users.push(newUser)
@@ -50,9 +53,11 @@ export const deleteUser = (req: Request, res: Response): void => {
 	if (userIndex !== -1) {
 		users.splice(userIndex, 1)
 		res.status(204).send()
+		return
 	} else {
 		res.status(404).json({
 			message: 'Usuário não encontrado'
 		})
+		return
 	}
 }

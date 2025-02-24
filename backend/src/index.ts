@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express'
 import userRoutes from './routes/userRoutes'
+import transactionsRoutes from './routes/transactionsRoutes'
 
 const app = express()
 const port = 3000
@@ -9,6 +10,7 @@ app.use(express.json())
 
 // Rotas
 app.use('/users', userRoutes)
+app.use('/transactions', transactionsRoutes)
 
 // Rota de teste
 app.get('/', (req: Request, res: Response) => {
@@ -17,6 +19,5 @@ app.get('/', (req: Request, res: Response) => {
 
 // Inicia o Servidor
 app.listen(port, () => {
-    console.log(`Servidor rodando na porta: ${port}`)
+	console.log(`Servidor rodando na porta: ${port}`)
 })
-
