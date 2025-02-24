@@ -1,7 +1,14 @@
 import { Request, Response } from 'express'
+import { findUserById } from '../utils/userUtils'
+
+export interface userProps {
+	id: number
+	name: string
+	age: number
+}
 
 // Como o desafio não pediu persistência de dados, armazenar dados temporariamente:
-let users: { id: number; name: string; age: number }[] = []
+export let users: userProps[] = []
 // Contador para os ids
 let nextID = 1
 
@@ -13,7 +20,7 @@ export const getAllUsers = (req: Request, res: Response): void => {
 // GET /users/:id
 export const getUserByID = (req: Request, res: Response): void => {
 	const { id } = req.params
-	const user = users.find(user => user.id === Number(id))
+	const user = findUserById(Number(id))
 	if (user) {
 		res.json(user)
 	} else {
@@ -48,10 +55,4 @@ export const deleteUser = (req: Request, res: Response): void => {
 			message: 'Usuário não encontrado'
 		})
 	}
-}
-
-// user age
-export const getUserAge = (userId: number): number | undefined => {
-	const user = users.find(user => user.id === userId)
-	return user ? user.age : undefined
 }
