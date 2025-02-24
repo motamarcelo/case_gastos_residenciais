@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUserAge } from './userController'
+import { findUserById } from '../utils/userUtils'
 
 // Armazenar dados temporariamente:
 let transactions: {
@@ -40,15 +40,17 @@ export const createTransaction = (req: Request, res: Response): void => {
 		})
 	}
 
-    const userAge = getUserAge(personId)
-    if (!userAge) {
-        
-    }
+	const user = findUserById(personId)
+	if (!user) {
+		res.status(400).json({ message: 'Usuário não encontrado' })
+	}
+
+	// lógica de idade aqui, age <= 18 apenas despesas
 
 	if (type !== 'receitas' && type !== 'despesas') {
 		res.status(400).json({
 			message:
-				"O campo type apenas aceita respostas 'receitas' ou 'despesas'"
+				"O campo type apenas aceita valores 'receitas' ou 'despesas'"
 		})
 	}
 
