@@ -2,44 +2,51 @@
 
 import { useState, useEffect } from 'react'
 import { UserProps } from '@/types/User'
-import Modal from '@/components/Modal'
+import ModalAddUser from '@/components/ModalAddUser'
+import ModalAddTransaction from '@/components/ModalAddTransaction'
 import Table from '@/components/Table'
-import api from '../services/api'
+import UserService from '@/utils/services/user'
 
 export default function Home() {
 	const [users, setUsers] = useState<UserProps[]>([])
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await api.get<UserProps[]>('/users')
-				setUsers(response.data)
-			} catch (err) {
-				console.log(err)
-			}
+	const fetchUsers = async () => {
+		const response = await UserService.getUsers()
+		if (response) {
+			const data: UserProps[] = response
+			setUsers(data)
+			return
 		}
+		setUsers([])
+	}
 
-		fetchData()
+	useEffect(() => {
+		fetchUsers()
 	}, [])
+
+	const handleUserAdded = () => {
+		fetchUsers()
+	}
 
 	return (
 		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-white text-black">
 			<main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-				<h1>Olá</h1>
-				<div className="flex flex-col">
-					{users.map(user => (
-						<div key={user.id} className="flex flex-row gap-8">
-							<p>{user.id}</p>
-							<p>{user.name}</p>
-							<p>{user.age}</p>
-						</div>
-					))}
+				<div className="flex flex-row gap-8">
+					<ModalAddUser
+						onUserAdded={handleUserAdded}
+						BtnTitle="Adicionar Usuário"
+					/>
+					<ModalAddTransaction
+						onTransactionAdded={() => {}}
+						users={users}
+						BtnTitle="Adicionar Transação"
+					/>
 				</div>
-				<Modal BtnTitle="Adicionar Usuário" />
-				<Table />
+
+				<Table onUserRemove={fetchUsers} users={users} />
 			</main>
 			<footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-				<p>Marcelo Mota</p>
+				<p>Feito por Marcelo Mota</p>
 			</footer>
 		</div>
 	)

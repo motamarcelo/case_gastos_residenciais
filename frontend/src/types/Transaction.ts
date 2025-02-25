@@ -1,6 +1,6 @@
 // Criando a interface da Transação
 export interface TransactionProps {
-	id: number
+	id?: number
 	description: string
 	value: number
 	type: 'receita' | 'despesa'

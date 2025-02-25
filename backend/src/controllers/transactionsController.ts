@@ -1,14 +1,28 @@
 import { Request, Response } from 'express'
 import { findUserById } from '../utils/userUtils'
+import {
+	getUserTransactions,
+	getDespesasById,
+	getReceitasById
+} from '../utils/transactionUtils'
 
-// Armazenar dados temporariamente:
-let transactions: {
+export interface transactionProps {
 	id: number
 	description: string
 	value: number
 	type: 'receita' | 'despesa'
 	personId: number
-}[] = []
+}
+
+export interface UserBalance {
+	userId: number
+	totalDespesa: number
+	totalReceita: number
+	UserBalance: number
+}
+
+// Armazenar dados temporariamente:
+export let transactions: transactionProps[] = []
 // Contador para os ids
 let nextID = 1
 
@@ -31,6 +45,60 @@ export const getTransactionByID = (req: Request, res: Response): void => {
 		res.status(404).json({ message: 'Transação não encontrada' })
 		return
 	}
+}
+
+// GET /transactions/user/:id
+export const getAllUserTransactions = (req: Request, res: Response): void => {
+	const userId = parseInt(req.params.id, 10)
+	const transactions = getUserTransactions(userId)
+
+	if (isNaN(userId)) {
+		res.status(400).json({ error: 'user ID inválido' })
+		return
+	}
+
+	if (transactions.length < 1) {
+		res.status(404).json({ message: 'Esse usuário não possui transações' })
+		return
+	} else {
+		res.status(201).json(transactions)
+	}
+}
+
+// GET /transactions/user/balance
+export const getTotalBalance = (req: Request, res: Response): void => {
+	let totalReceita = 0
+	let totalDespesa = 0
+
+	transactions.forEach(transaction => {
+		if (transaction.type === 'receita') {
+			totalReceita += transaction.value
+		} else if (transaction.type === 'despesa') {
+			totalDespesa += transaction.value
+		}
+	})
+
+	const calculatedBalance = totalReceita - totalDespesa
+
+	const bal: UserBalance = {
+		userId: 0, // Se você quiser um ID específico, ajuste aqui
+		totalDespesa: totalDespesa,
+		totalReceita: totalReceita,
+		UserBalance: calculatedBalance
+	}
+	res.status(200).json(bal)
+}
+
+// GET /transactions/user/balance/:id
+export const checkUserBalance = (req: Request, res: Response): void => {
+	const userId = parseInt(req.params.id, 10)
+	const bal: UserBalance = {
+		userId: userId,
+		totalDespesa: getDespesasById(userId),
+		totalReceita: getReceitasById(userId),
+		UserBalance: getReceitasById(userId) - getDespesasById(userId)
+	}
+	res.status(200).json(bal)
 }
 
 // POST /transactions

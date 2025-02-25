@@ -1,45 +1,73 @@
-export default function Table() {
+import { UserProps, UserBalance } from '@/types/User'
+import TableLine from './TableLine'
+import formatCurrency from '@/utils/formatCurrency'
+import TransactionService from '@/utils/services/transaction'
+import { useEffect, useState } from 'react'
+
+interface Props {
+	users: UserProps[]
+	onUserRemove: () => void // avisar que usuário foi removido
+}
+
+export default function Table({ users, onUserRemove }: Props) {
+	const [totalBalance, setTotalBalance] = useState<UserBalance | null>()
+
+	const fetchTotalBalance = async () => {
+		const response = await TransactionService.getTotalBalance()
+		if (response) {
+			setTotalBalance(response)
+			return
+		}
+	}
+
+	useEffect(() => {
+		fetchTotalBalance()
+	}, [fetchTotalBalance])
+
 	return (
 		<div className="overflow-x-auto bg-zinc-200 rounded-xl">
 			<table className="table">
 				{/* head */}
 				<thead>
 					<tr className="text-black text-xl">
-						<th></th>
-						<th>Name</th>
-						<th>Age</th>
+						<th>ID</th>
+						<th>Nome</th>
+						<th>Idade</th>
 						<th>Receitas</th>
 						<th>Despesas</th>
 						<th>Saldo</th>
 					</tr>
 				</thead>
 				<tbody className="text-lg font-semibold">
+					{users?.map(user => (
+						<TableLine
+							onUserRemove={onUserRemove}
+							key={user.id}
+							user_id={user?.id}
+							name={user.name}
+							age={user.age}
+						/>
+					))}
 					{/* row 1 */}
-					<tr className="hover:bg-zinc-400 cursor-pointer">
-						<th>1</th>
-						<td>Cy Ganderton</td>
-						<td>Quality Control Specialist</td>
-						<td>Blue</td>
-						<td>Blue</td>
-						<td>Blue</td>
-					</tr>
-					{/* row 2 */}
-					<tr className="hover:bg-zinc-400 cursor-pointer">
-						<th>2</th>
-						<td>Hart Hagerty</td>
-						<td>Desktop Support Technician</td>
-						<td>Purple</td>
-						<td>Purple</td>
-						<td>Purple</td>
-					</tr>
-					{/* row 3 */}
-					<tr className="hover:bg-zinc-400 cursor-pointer">
-						<th>3</th>
-						<td>Brice Swyre</td>
-						<td>Tax Accountant</td>
-						<td>Red</td>
-						<td>Red</td>
-						<td>Red</td>
+					<tr className="justify-end">
+						<td></td>
+						<td></td>
+						<td>Total:</td>
+						<td>
+							{totalBalance
+								? formatCurrency(totalBalance.totalReceita)
+								: ''}
+						</td>
+						<td>
+							{totalBalance
+								? formatCurrency(totalBalance.totalDespesa)
+								: ''}
+						</td>
+						<td>
+							{totalBalance
+								? formatCurrency(totalBalance.UserBalance)
+								: ''}
+						</td>
 					</tr>
 				</tbody>
 			</table>

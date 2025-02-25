@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { findUserById } from '../utils/userUtils'
+import { removeTransactionsByPersonId } from '../utils/transactionUtils'
 
 export interface userProps {
 	id: number
@@ -53,7 +54,9 @@ export const deleteUser = (req: Request, res: Response): void => {
 	const { id } = req.params
 	const userIndex = users.findIndex(user => user.id === Number(id))
 	if (userIndex !== -1) {
+		const userId = users[userIndex].id
 		users.splice(userIndex, 1)
+		removeTransactionsByPersonId(userId)
 		res.status(204).send()
 		return
 	} else {
