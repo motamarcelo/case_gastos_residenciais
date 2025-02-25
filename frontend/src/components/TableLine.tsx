@@ -1,46 +1,48 @@
 import { TrashIcon } from '@heroicons/react/16/solid'
 import UserService from '@/utils/services/user'
 import TransactionService from '@/utils/services/transaction'
+import { UserProps } from '@/types/User'
 import { UserBalance } from '@/types/User'
 import { useEffect, useState } from 'react'
 import formatCurrency from '@/utils/formatCurrency'
+import ModalViewTransactions from './ModalViewTransactions'
 
 interface Props {
-	user_id?: number
-	name: string
-	age: number
+	user: UserProps
 	onUserRemove: () => void // Avisar que um usuário foi removido
 }
 
-export default function TableLine({ user_id, name, age, onUserRemove }: Props) {
+export default function TableLine({ user, onUserRemove }: Props) {
 	const [userBalance, setUserBalance] = useState<UserBalance | null>()
 
 	const handleRemoveUser = async () => {
-		if (user_id !== undefined) {
-			await UserService.removeUser(user_id)
+		if (user.id !== undefined) {
+			await UserService.removeUser(user.id)
 			onUserRemove()
 		}
 	}
 
-	const fetchBalance = async () => {
-		if (user_id) {
-			const response = await TransactionService.getUserBalance(user_id)
-			if (response) {
-				setUserBalance(response)
-				return
+	useEffect(() => {
+		const fetchBalance = async () => {
+			if (user.id) {
+				const response = await TransactionService.getUserBalance(
+					user.id
+				)
+				if (response) {
+					setUserBalance(response)
+					return
+				}
 			}
 		}
-	}
 
-	useEffect(() => {
 		fetchBalance()
-	}, [fetchBalance])
+	}, [user.id])
 
 	return (
 		<tr className="hover:bg-zinc-400">
-			<th>{user_id}</th>
-			<td>{name}</td>
-			<td>{age}</td>
+			<th>{user.id}</th>
+			<td>{user.name}</td>
+			<td>{user.age}</td>
 			<td>
 				{userBalance ? formatCurrency(userBalance.totalReceita) : ''}
 			</td>
@@ -51,7 +53,7 @@ export default function TableLine({ user_id, name, age, onUserRemove }: Props) {
 				{userBalance ? formatCurrency(userBalance.UserBalance) : ''}
 			</td>
 			<td>
-				<button>Transações</button>
+				<ModalViewTransactions BtnTitle="Transações" user={user} />
 			</td>
 			<td>
 				<button

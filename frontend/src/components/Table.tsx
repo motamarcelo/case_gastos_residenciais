@@ -12,17 +12,17 @@ interface Props {
 export default function Table({ users, onUserRemove }: Props) {
 	const [totalBalance, setTotalBalance] = useState<UserBalance | null>()
 
-	const fetchTotalBalance = async () => {
-		const response = await TransactionService.getTotalBalance()
-		if (response) {
-			setTotalBalance(response)
-			return
-		}
-	}
-
 	useEffect(() => {
+		const fetchTotalBalance = async () => {
+			const response = await TransactionService.getTotalBalance()
+			if (response) {
+				setTotalBalance(response)
+				return
+			}
+		}
+
 		fetchTotalBalance()
-	}, [fetchTotalBalance])
+	}, [])
 
 	return (
 		<div className="overflow-x-auto bg-zinc-200 rounded-xl">
@@ -41,11 +41,9 @@ export default function Table({ users, onUserRemove }: Props) {
 				<tbody className="text-lg font-semibold">
 					{users?.map(user => (
 						<TableLine
-							onUserRemove={onUserRemove}
 							key={user.id}
-							user_id={user?.id}
-							name={user.name}
-							age={user.age}
+							user={user}
+							onUserRemove={onUserRemove}
 						/>
 					))}
 					{/* row 1 */}
