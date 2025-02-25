@@ -3,13 +3,21 @@ import TableLine from './TableLine'
 import formatCurrency from '@/utils/formatCurrency'
 import TransactionService from '@/utils/services/transaction'
 import { useEffect, useState } from 'react'
+import { TransactionProps } from '@/types/Transaction'
 
 interface Props {
 	users: UserProps[]
+	transactions: TransactionProps[]
+	onTransactionAdded: () => void // avisar que uma transação foi adicionada
 	onUserRemove: () => void // avisar que usuário foi removido
 }
 
-export default function Table({ users, onUserRemove }: Props) {
+export default function Table({
+	users,
+	transactions,
+	onTransactionAdded,
+	onUserRemove
+}: Props) {
 	const [totalBalance, setTotalBalance] = useState<UserBalance | null>()
 
 	useEffect(() => {
@@ -22,7 +30,7 @@ export default function Table({ users, onUserRemove }: Props) {
 		}
 
 		fetchTotalBalance()
-	}, [])
+	}, [onTransactionAdded])
 
 	return (
 		<div className="overflow-x-auto bg-zinc-200 rounded-xl">
@@ -43,6 +51,10 @@ export default function Table({ users, onUserRemove }: Props) {
 						<TableLine
 							key={user.id}
 							user={user}
+							onTransactionAdded={onTransactionAdded}
+							userTransactions={transactions.filter(
+								transaction => transaction.personId === user.id
+							)}
 							onUserRemove={onUserRemove}
 						/>
 					))}

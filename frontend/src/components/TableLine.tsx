@@ -6,13 +6,21 @@ import { UserBalance } from '@/types/User'
 import { useEffect, useState } from 'react'
 import formatCurrency from '@/utils/formatCurrency'
 import ModalViewTransactions from './ModalViewTransactions'
+import { TransactionProps } from '@/types/Transaction'
 
 interface Props {
 	user: UserProps
+	userTransactions: TransactionProps[]
+	onTransactionAdded: () => void // Avisar que uma transação foi adicioanda
 	onUserRemove: () => void // Avisar que um usuário foi removido
 }
 
-export default function TableLine({ user, onUserRemove }: Props) {
+export default function TableLine({
+	user,
+	userTransactions,
+	onTransactionAdded,
+	onUserRemove
+}: Props) {
 	const [userBalance, setUserBalance] = useState<UserBalance | null>()
 
 	const handleRemoveUser = async () => {
@@ -36,7 +44,7 @@ export default function TableLine({ user, onUserRemove }: Props) {
 		}
 
 		fetchBalance()
-	}, [user.id])
+	}, [onTransactionAdded, user.id])
 
 	return (
 		<tr className="hover:bg-zinc-400">
@@ -53,7 +61,11 @@ export default function TableLine({ user, onUserRemove }: Props) {
 				{userBalance ? formatCurrency(userBalance.UserBalance) : ''}
 			</td>
 			<td>
-				<ModalViewTransactions BtnTitle="Transações" user={user} />
+				<ModalViewTransactions
+					BtnTitle="Transações"
+					user={user}
+					transactions={userTransactions}
+				/>
 			</td>
 			<td>
 				<button
