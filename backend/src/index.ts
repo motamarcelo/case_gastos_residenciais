@@ -4,7 +4,7 @@ import cors from 'cors'
 import transactionsRoutes from './routes/transactionsRoutes'
 
 const app = express()
-const port = 3000
+const port = 3001
 
 // Middleware para parsear o  JSON
 app.use(express.json())
